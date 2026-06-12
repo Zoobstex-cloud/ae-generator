@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AE Project Generator</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #0f0f0f; color: #fff; min-height: 100vh; padding: 2rem 1rem; }
+.container { max-width: 680px; margin: 0 auto; }
+h1 { font-size: 22px; font-weight: 600; margin-bottom: 0.3rem; color: #fff; }
+.subtitle { font-size: 14px; color: #888; margin-bottom: 2rem; }
+.step { margin-bottom: 1.5rem; }
+.step-label { font-size: 11px; color: #666; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 0.6rem; font-weight: 600; }
+.option-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 8px; }
+.opt { border: 1px solid #2a2a2a; border-radius: 8px; padding: 10px 12px; cursor: pointer; background: #1a1a1a; transition: all 0.15s; }
+.opt:hover { border-color: #444; background: #222; }
+.opt.selected { border-color: #D85A30; background: #1f1008; }
+.opt-icon { font-size: 18px; margin-bottom: 4px; }
+.opt-name { font-size: 13px; font-weight: 600; color: #fff; }
+.opt-hint { font-size: 11px; color: #666; margin-top: 2px; }
+.slider-row { display: flex; align-items: center; gap: 12px; }
+input[type=range] { flex: 1; -webkit-appearance: none; height: 4px; background: #2a2a2a; border-radius: 2px; outline: none; }
+input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 18px; height: 18px; border-radius: 50%; background: #D85A30; cursor: pointer; }
+.slider-val { font-size: 14px; font-weight: 600; min-width: 50px; color: #fff; }
+.color-grid { display: flex; gap: 10px; flex-wrap: wrap; }
+.col-opt { width: 44px; height: 44px; border-radius: 8px; cursor: pointer; border: 2px solid transparent; transition: transform 0.1s, border-color 0.15s; }
+.col-opt:hover { transform: scale(1.08); }
+.col-opt.selected { border-color: #D85A30; transform: scale(1.1); }
+.gen-btn { margin-top: 1.5rem; width: 100%; padding: 14px; background: #D85A30; color: #fff; border: none; border-radius: 8px; font-size: 15px; font-weight: 600; cursor: pointer; transition: background 0.15s; }
+.gen-btn:hover { background: #b84a22; }
+.result { margin-top: 1.5rem; border: 1px solid #2a2a2a; border-radius: 12px; padding: 1.25rem; background: #1a1a1a; display: none; }
+.result.show { display: block; }
+.result-title { font-size: 15px; font-weight: 600; margin-bottom: 1rem; color: #D85A30; }
+.result-section { margin-bottom: 1rem; }
+.result-section-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: #666; margin-bottom: 6px; font-weight: 600; }
+.tag { display: inline-block; font-size: 12px; padding: 3px 8px; border-radius: 4px; margin: 2px; background: #222; color: #ccc; border: 1px solid #333; }
+.layer-item { display: flex; align-items: center; gap: 8px; padding: 7px 0; border-bottom: 1px solid #222; font-size: 13px; }
+.layer-item:last-child { border-bottom: none; }
+.layer-name { font-weight: 600; color: #fff; }
+.layer-desc { color: #666; margin-left: auto; font-size: 12px; }
+.dl-btn { margin-top: 1rem; width: 100%; padding: 10px; background: #222; color: #fff; border: 1px solid #333; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; }
+.dl-btn:hover { background: #2a2a2a; }
+.loading { text-align: center; padding: 1rem; color: #666; font-size: 13px; display: none; }
+.loading.show { display: block; }
+.footer { margin-top: 2rem; text-align: center; font-size: 12px; color: #444; }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>⚡ AE Project Generator</h1>
+  <p class="subtitle">Выбери параметры — получи структуру проекта</p>
+
+  <div class="step">
+    <div class="step-label">Стиль анимации</div>
+    <div class="option-grid" id="style-grid">
+      <div class="opt selected" data-val="minimal" onclick="select(this,'style-grid')">
+        <div class="opt-icon">◻️</div>
+        <div class="opt-name">Минимализм</div>
+        <div class="opt-hint">Чистые линии</div>
+      </div>
+      <div class="opt" data-val="cyberpunk" onclick="select(this,'style-grid')">
+        <div class="opt-icon">⚡</div>
+        <div class="opt-name">Киберпанк</div>
+        <div class="opt-hint">Глитч, неон</div>
+      </div>
+      <div class="opt" data-val="organic" onclick="select(this,'style-grid')">
+        <div class="opt-icon">🌊</div>
+        <div class="opt-name">Органика</div>
+        <div class="opt-hint">Плавные формы</div>
+      </div>
+      <div class="opt" data-val="cinematic" onclick="select(this,'style-grid')">
+        <div class="opt-icon">🎬</div>
+        <div class="opt-name">Кинематика</div>
+        <div class="opt-hint">Кино-стиль</div>
+      </div>
+      <div class="opt" data-val="glitch" onclick="select(this,'style-grid')">
+        <div class="opt-icon">📡</div>
+        <div class="opt-name">Глитч</div>
+        <div class="opt-hint">Артефакты</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-label">Длительность</div>
+    <div class="slider-row">
+      <input type="range" min="5" max="60" value="15" step="5" id="dur-slider" oninput="document.getElementById('dur-val').textContent=this.value+' сек'">
+      <span class="slider-val" id="dur-val">15 сек</span>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-label">Жанр</div>
+    <div class="option-grid" id="genre-grid">
+      <div class="opt selected" data-val="ad" onclick="select(this,'genre-grid')">
+        <div class="opt-icon">📢</div>
+        <div class="opt-name">Реклама</div>
+        <div class="opt-hint">Промо, бренд</div>
+      </div>
+      <div class="opt" data-val="intro" onclick="select(this,'genre-grid')">
+        <div class="opt-icon">▶️</div>
+        <div class="opt-name">Интро</div>
+        <div class="opt-hint">Логотип, заставка</div>
+      </div>
+      <div class="opt" data-val="social" onclick="select(this,'genre-grid')">
+        <div class="opt-icon">📱</div>
+        <div class="opt-name">Соцсети</div>
+        <div class="opt-hint">Reels, Stories</div>
+      </div>
+      <div class="opt" data-val="title" onclick="select(this,'genre-grid')">
+        <div class="opt-icon">✏️</div>
+        <div class="opt-name">Титры</div>
+        <div class="opt-hint">Текст, субтитры</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-label">Цветовая схема</div>
+    <div class="color-grid" id="color-grid">
+      <div class="col-opt selected" data-val="mono" title="Монохром" style="background: linear-gradient(135deg, #2C2C2A, #888780)" onclick="selectColor(this)"></div>
+      <div class="col-opt" data-val="neon" title="Неон" style="background: linear-gradient(135deg, #7F77DD, #1D9E75)" onclick="selectColor(this)"></div>
+      <div class="col-opt" data-val="warm" title="Тёплая" style="background: linear-gradient(135deg, #D85A30, #EF9F27)" onclick="selectColor(this)"></div>
+      <div class="col-opt" data-val="cool" title="Холодная" style="background: linear-gradient(135deg, #185FA5, #1D9E75)" onclick="selectColor(this)"></div>
+      <div class="col-opt" data-val="pastel" title="Пастель" style="background: linear-gradient(135deg, #F4C0D1, #B5D4F4)" onclick="selectColor(this)"></div>
+      <div class="col-opt" data-val="contrast" title="Контраст" style="background: linear-gradient(135deg, #1a1a1a, #D85A30)" onclick="selectColor(this)"></div>
+    </div>
+  </div>
+
+  <button class="gen-btn" onclick="generate()">⚡ Сгенерировать структуру проекта</button>
+
+  <div class="loading" id="loading">Генерирую структуру...</div>
+
+  <div class="result" id="result">
+    <div class="result-title" id="result-title"></div>
+    <div class="result-section">
+      <div class="result-section-label">Слои и структура</div>
+      <div id="layers-list"></div>
+    </div>
+    <div class="result-section">
+      <div class="result-section-label">Эффекты</div>
+      <div id="effects-list"></div>
+    </div>
+    <div class="result-section">
+      <div class="result-section-label">Шрифты</div>
+      <div id="fonts-list"></div>
+    </div>
+    <div class="result-section">
+      <div class="result-section-label">Плагины</div>
+      <div id="plugins-list"></div>
+    </div>
+    <button class="dl-btn" onclick="downloadTxt()">⬇️ Скачать как .txt</button>
+  </div>
+
+  <div class="footer">Сделано для подписчиков бота по After Effects</div>
+</div>
+
+<script>
+const DATA = {
+  minimal: {
+    ad: {
+      layers: [{n:"BG Solid",d:"Фоновый слой"},{n:"Main Title",d:"Ключевой заголовок"},{n:"Subtitle",d:"Подзаголовок"},{n:"Product Shot",d:"Изображение товара"},{n:"CTA Button",d:"Призыв к действию"},{n:"Null Control",d:"Мастер-управление"}],
+      effects:["Opacity fade-in","Position ease (Easy Ease)","Scale bounce","Trim Paths на линиях"],
+      fonts:["Helvetica Neue","SF Pro Display"],plugins:["Motion Bro (опц.)"]
+    },
+    intro: {
+      layers:[{n:"BG Layer",d:"Чистый фон"},{n:"Logo Shape",d:"Форма логотипа"},{n:"Brand Name",d:"Название бренда"},{n:"Null Master",d:"Контроль анимации"}],
+      effects:["Scale from 0","Opacity reveal","Stroke Trim Paths","Position overshoot"],
+      fonts:["Futura","Montserrat"],plugins:[]
+    },
+    social: {
+      layers:[{n:"BG Gradient",d:"Фон"},{n:"Hook Text",d:"Цепляющий текст"},{n:"Visual",d:"Визуал"},{n:"Overlay",d:"Затемнение"}],
+      effects:["Slide-in from bottom","Text character animate","Scale pulse"],
+      fonts:["Inter","Neue Haas Grotesk"],plugins:[]
+    },
+    title: {
+      layers:[{n:"Main Title",d:"Основной текст"},{n:"Underline",d:"Декоративная линия"},{n:"Sub Text",d:"Дополнительный"}],
+      effects:["Trim Paths reveal","Opacity animate","Position ease"],
+      fonts:["Helvetica Neue","Garamond"],plugins:[]
+    }
+  },
+  cyberpunk: {
+    ad:{
+      layers:[{n:"Dark BG",d:"Тёмный фон"},{n:"Grid Overlay",d:"Сетка фона"},{n:"Glitch Layer",d:"Глитч-эффект"},{n:"Neon Title",d:"Неоновый заголовок"},{n:"Product",d:"Продукт"},{n:"Chromatic AB",d:"Хроматическая аберрация"}],
+      effects:["Glitch Displacement","CC Radial Fast Blur","Glow","Hue/Saturation shift","Echo"],
+      fonts:["Rajdhani","Orbitron"],plugins:["Optical Flares","GLITCH (AEJuice)"]
+    },
+    intro:{
+      layers:[{n:"Dark BG",d:"Тёмный фон"},{n:"Scanlines",d:"Развёртка"},{n:"HUD Ring",d:"Круговой HUD"},{n:"Logo Text",d:"Логотип"},{n:"Chromatic",d:"Аберрация"}],
+      effects:["Strobe","Displacement Map","Glow","Echo","Fast Box Blur"],
+      fonts:["Orbitron","Share Tech Mono"],plugins:["Element 3D (опц.)"]
+    },
+    social:{
+      layers:[{n:"BG Dark",d:"Тёмный фон"},{n:"Glitch",d:"Глитч"},{n:"Text",d:"Текст"},{n:"Image",d:"Изображение"}],
+      effects:["Displacement Map","Noise","Glow","CC Pixel Polly"],
+      fonts:["Rajdhani","Anonymous Pro"],plugins:["Glitch Suite"]
+    },
+    title:{
+      layers:[{n:"Title",d:"Заголовок"},{n:"Glitch copy",d:"Глитч-копия"},{n:"Scan Line",d:"Сканлайн"}],
+      effects:["Offset glitch","Echo","Glow"],
+      fonts:["Orbitron","Share Tech Mono"],plugins:[]
+    }
+  },
+  organic: {
+    ad:{
+      layers:[{n:"BG Texture",d:"Органический фон"},{n:"Blob Shape",d:"Органичная форма"},{n:"Title",d:"Заголовок"},{n:"Product",d:"Продукт"},{n:"Decor elements",d:"Декор"}],
+      effects:["Bezier Warp","Turbulent Displace","Feather edges","Gaussian Blur bg"],
+      fonts:["Playfair Display","Lora"],plugins:["Duik (риггинг)"]
+    },
+    intro:{
+      layers:[{n:"Morph shape",d:"Морфинг-форма"},{n:"Logo",d:"Логотип"},{n:"BG",d:"Фон"}],
+      effects:["Bezier Warp morph","Scale ease","Feather"],
+      fonts:["Playfair Display","DM Serif"],plugins:["Duik Bassel"]
+    },
+    social:{
+      layers:[{n:"Soft BG",d:"Мягкий фон"},{n:"Blob",d:"Форма-блоб"},{n:"Text",d:"Текст"}],
+      effects:["Bezier Warp","Gaussian Blur","Opacity soft"],
+      fonts:["Lora","Cormorant"],plugins:[]
+    },
+    title:{
+      layers:[{n:"Title",d:"Заголовок"},{n:"Underline wave",d:"Волнистая линия"}],
+      effects:["Trim Paths","Bezier Warp"],
+      fonts:["Playfair Display","EB Garamond"],plugins:[]
+    }
+  },
+  cinematic: {
+    ad:{
+      layers:[{n:"Letterbox BG",d:"Кино-фон"},{n:"Black bars",d:"Чёрные полосы"},{n:"Scene",d:"Сцена"},{n:"Color Grade",d:"Цветокоррекция"},{n:"Title Card",d:"Титульная карточка"}],
+      effects:["Lumetri Color","Vignette","Film Grain","Lens Blur","Letterbox matte"],
+      fonts:["Trajan Pro","Cinzel"],plugins:["Magic Bullet Looks (опц.)"]
+    },
+    intro:{
+      layers:[{n:"Black BG",d:"Чёрный фон"},{n:"Scene",d:"Сцена"},{n:"Title",d:"Заголовок"},{n:"Vignette",d:"Виньетка"}],
+      effects:["Lumetri Color","Opacity slow fade","Lens Blur","Film Grain"],
+      fonts:["Cinzel","Cormorant Garamond"],plugins:[]
+    },
+    social:{
+      layers:[{n:"Footage",d:"Видеоряд"},{n:"Grade",d:"Цветокоррекция"},{n:"Caption",d:"Подпись"}],
+      effects:["Lumetri Color","Vignette","Grain"],
+      fonts:["Trajan","EB Garamond"],plugins:[]
+    },
+    title:{
+      layers:[{n:"Black BG",d:"Фон"},{n:"Title",d:"Заголовок"},{n:"Thin line",d:"Тонкая линия"}],
+      effects:["Opacity reveal slow","Trim Paths","Feather"],
+      fonts:["Cinzel","Trajan Pro"],plugins:[]
+    }
+  },
+  glitch: {
+    ad:{
+      layers:[{n:"BG",d:"Фон"},{n:"Main Visual",d:"Главный визуал"},{n:"Glitch R",d:"Красный канал"},{n:"Glitch B",d:"Синий канал"},{n:"Text",d:"Текст"},{n:"Noise",d:"Шум"}],
+      effects:["Channel Mixer","Displacement Map","Echo","Noise","CC Pixel Polly","Strobe Light"],
+      fonts:["VT323","Space Mono"],plugins:["Glitch Suite","AEJuice Glitch"]
+    },
+    intro:{
+      layers:[{n:"BG",d:"Тёмный фон"},{n:"Glitch pre",d:"Пре-глитч"},{n:"Logo",d:"Лого"},{n:"Glitch post",d:"Пост-глитч"}],
+      effects:["Displacement","Channel Mixer","Noise","Strobe"],
+      fonts:["Roboto Mono","VT323"],plugins:[]
+    },
+    social:{
+      layers:[{n:"Image",d:"Изображение"},{n:"Glitch",d:"Глитч"},{n:"Text",d:"Текст"}],
+      effects:["Displacement Map","CC Pixel Polly","Noise"],
+      fonts:["Space Mono","Anonymous Pro"],plugins:[]
+    },
+    title:{
+      layers:[{n:"Title",d:"Заголовок"},{n:"Glitch copy",d:"Глитч-копия"},{n:"Scan",d:"Сканлайн"}],
+      effects:["Channel Mixer","Echo","Strobe"],
+      fonts:["VT323","Share Tech Mono"],plugins:[]
+    }
+  }
+};
+
+const GENRE_NAMES={ad:"Реклама",intro:"Интро",social:"Соцсети",title:"Титры"};
+const STYLE_NAMES={minimal:"Минимализм",cyberpunk:"Киберпанк",organic:"Органика",cinematic:"Кинематика",glitch:"Глитч"};
+const COLOR_NAMES={mono:"Монохром",neon:"Неон",warm:"Тёплая",cool:"Холодная",pastel:"Пастель",contrast:"Контраст"};
+
+let selectedStyle="minimal", selectedGenre="ad", selectedColor="mono";
+
+function select(el,gridId){
+  document.querySelectorAll('#'+gridId+' .opt').forEach(o=>o.classList.remove('selected'));
+  el.classList.add('selected');
+  if(gridId==='style-grid') selectedStyle=el.dataset.val;
+  if(gridId==='genre-grid') selectedGenre=el.dataset.val;
+}
+
+function selectColor(el){
+  document.querySelectorAll('#color-grid .col-opt').forEach(o=>o.classList.remove('selected'));
+  el.classList.add('selected');
+  selectedColor=el.dataset.val;
+}
+
+function generate(){
+  const dur=document.getElementById('dur-slider').value;
+  const d=DATA[selectedStyle]?.[selectedGenre];
+  if(!d) return;
+  document.getElementById('loading').classList.add('show');
+  document.getElementById('result').classList.remove('show');
+  setTimeout(()=>{
+    document.getElementById('loading').classList.remove('show');
+    document.getElementById('result-title').textContent=STYLE_NAMES[selectedStyle]+' · '+GENRE_NAMES[selectedGenre]+' · '+dur+' сек · '+COLOR_NAMES[selectedColor];
+    document.getElementById('layers-list').innerHTML=d.layers.map(l=>`<div class="layer-item"><span class="layer-name">${l.n}</span><span class="layer-desc">${l.d}</span></div>`).join('');
+    document.getElementById('effects-list').innerHTML=d.effects.map(e=>`<span class="tag">${e}</span>`).join('');
+    document.getElementById('fonts-list').innerHTML=d.fonts.map(f=>`<span class="tag">${f}</span>`).join('');
+    document.getElementById('plugins-list').innerHTML=d.plugins.length?d.plugins.map(p=>`<span class="tag">${p}</span>`).join(''):'<span style="font-size:13px;color:#555">Плагины не нужны</span>';
+    document.getElementById('result').classList.add('show');
+  },600);
+}
+
+function downloadTxt(){
+  const dur=document.getElementById('dur-slider').value;
+  const d=DATA[selectedStyle]?.[selectedGenre];
+  if(!d) return;
+  let txt='СТРУКТУРА AE-ПРОЕКТА\n';
+  txt+=`Стиль: ${STYLE_NAMES[selectedStyle]}\nЖанр: ${GENRE_NAMES[selectedGenre]}\nДлительность: ${dur} сек\nЦвет: ${COLOR_NAMES[selectedColor]}\n\n`;
+  txt+=`СЛОИ:\n${d.layers.map(l=>`- ${l.n} (${l.d})`).join('\n')}\n\n`;
+  txt+=`ЭФФЕКТЫ:\n${d.effects.map(e=>`- ${e}`).join('\n')}\n\n`;
+  txt+=`ШРИФТЫ:\n${d.fonts.join(', ')}\n\n`;
+  txt+=`ПЛАГИНЫ:\n${d.plugins.length?d.plugins.join(', '):'не нужны'}\n`;
+  const blob=new Blob([txt],{type:'text/plain'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download=`ae-project-${selectedStyle}-${selectedGenre}.txt`;
+  a.click();
+}
+</script>
+</body>
+</html>
